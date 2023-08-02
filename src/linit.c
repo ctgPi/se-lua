@@ -45,6 +45,8 @@ static const luaL_Reg loadedlibs[] = {
 ** these libs are preloaded and must be required before used
 */
 static const luaL_Reg preloadedlibs[] = {
+  {LUA_RNGLIBNAME, luaopen_rng},
+  {LUA_ZIPLIBNAME, luaopen_zip},
   {NULL, NULL}
 };
 

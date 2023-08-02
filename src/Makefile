@@ -33,7 +33,8 @@ CORE_O=	lapi.o lcode.o lctype.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o \
 	lmem.o lobject.o lopcodes.o lparser.o lstate.o lstring.o ltable.o \
 	ltm.o lundump.o lvm.o lzio.o
 LIB_O=	lauxlib.o lbaselib.o lbitlib.o lcorolib.o ldblib.o liolib.o \
-	lmathlib.o loslib.o lstrlib.o ltablib.o loadlib.o linit.o
+	lmathlib.o loslib.o lstrlib.o ltablib.o loadlib.o linit.o \
+	zip.o rng.o miniz.o miniz_tdef.o miniz_tinfl.o miniz_zip.o
 BASE_O= $(CORE_O) $(LIB_O) $(MYOBJS)
 
 LUA_T=	lua
@@ -66,7 +67,7 @@ $(LUAC_T): $(LUAC_O) $(LUA_A)
 	$(CC) -o $@ $(LDFLAGS) $(LUAC_O) $(LUA_A) $(LIBS)
 
 clean:
-	$(RM) $(ALL_T) $(ALL_O) *.lib *.dll *.pdb
+	$(RM) $(ALL_T) $(ALL_O) *.lib *.dll *.pdb *.obj
 
 depend:
 	@$(CC) $(CFLAGS) -MM l*.c
@@ -184,4 +185,13 @@ lvm.o: lvm.c lua.h luaconf.h ldebug.h lstate.h lobject.h llimits.h ltm.h \
  lzio.h lmem.h ldo.h lfunc.h lgc.h lopcodes.h lstring.h ltable.h lvm.h
 lzio.o: lzio.c lua.h luaconf.h llimits.h lmem.h lstate.h lobject.h ltm.h \
  lzio.h
-
+rng.o: rng.zig lua.zig
+	$(CC) -I. -o $@ -c $<
+zip.o: zip.zig lua.zig miniz.c miniz.h miniz_common.h miniz_export.h \
+ miniz_tdef.c miniz_tdef.h miniz_tinfl.c miniz_tinfl.h miniz_zip.c \
+ miniz_zip.h
+	$(CC) -I. -o $@ -c $<
+miniz.o: miniz.c miniz.h
+miniz_tdef.o: miniz_tdef.c miniz.h
+miniz_tinfl.o: miniz_tinfl.c miniz.h
+miniz_zip.o: miniz_zip.c miniz.h

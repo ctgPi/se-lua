@@ -41,6 +41,11 @@ LUAMOD_API int (luaopen_debug) (lua_State *L);
 #define LUA_LOADLIBNAME	"package"
 LUAMOD_API int (luaopen_package) (lua_State *L);
 
+#define LUA_RNGLIBNAME	"rng"
+LUAMOD_API int (luaopen_rng) (lua_State *L);
+
+#define LUA_ZIPLIBNAME	"zip"
+LUAMOD_API int (luaopen_zip) (lua_State *L);
 
 /* open all previous libraries */
 LUALIB_API void (luaL_openlibs) (lua_State *L);
