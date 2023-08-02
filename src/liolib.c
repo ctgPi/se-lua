@@ -20,6 +20,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(LUA_WIN)
+#include <io.h>
+#endif
+
 #define liolib_c
 #define LUA_LIB
 
@@ -661,6 +665,13 @@ LUAMOD_API int luaopen_io (lua_State *L) {
   createstdfile(L, stdin, IO_INPUT, "stdin");
   createstdfile(L, stdout, IO_OUTPUT, "stdout");
   createstdfile(L, stderr, NULL, "stderr");
+
+#if defined(LUA_WIN)
+  lua_assert(_setmode(_fileno(stdin), _O_BINARY) != -1);
+  lua_assert(_setmode(_fileno(stdout), _O_BINARY) != -1);
+  lua_assert(_setmode(_fileno(stderr), _O_BINARY) != -1);
+#endif
+
   return 1;
 }
 
