@@ -47,6 +47,7 @@ static const luaL_Reg loadedlibs[] = {
 static const luaL_Reg preloadedlibs[] = {
   {LUA_RNGLIBNAME, luaopen_rng},
   {LUA_ZIPLIBNAME, luaopen_zip},
+  {LUA_ENVLIBNAME, luaopen_env},
   {NULL, NULL}
 };
 
