@@ -6,13 +6,13 @@
 # Your platform. See PLATS for possible values.
 PLAT= none
 
-CC= gcc
+CC= zig cc
 CFLAGS= -O2 -Wall -DLUA_COMPAT_ALL $(SYSCFLAGS) $(MYCFLAGS)
 LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
 LIBS= -lm $(SYSLIBS) $(MYLIBS)
 
-AR= ar rcu
-RANLIB= ranlib
+AR= zig ar rcu
+RANLIB= zig ranlib
 RM= rm -f
 
 SYSCFLAGS=
@@ -66,7 +66,7 @@ $(LUAC_T): $(LUAC_O) $(LUA_A)
 	$(CC) -o $@ $(LDFLAGS) $(LUAC_O) $(LUA_A) $(LIBS)
 
 clean:
-	$(RM) $(ALL_T) $(ALL_O)
+	$(RM) $(ALL_T) $(ALL_O) *.lib *.dll *.pdb
 
 depend:
 	@$(CC) $(CFLAGS) -MM l*.c
@@ -110,7 +110,7 @@ macosx:
 
 mingw:
 	$(MAKE) "LUA_A=lua52.dll" "LUA_T=lua.exe" \
-	"AR=$(CC) -shared -o" "RANLIB=strip --strip-unneeded" \
+	"AR=$(CC) -shared -o" "RANLIB=touch" \
 	"SYSCFLAGS=-DLUA_BUILD_AS_DLL" "SYSLIBS=" "SYSLDFLAGS=-s" lua.exe
 	$(MAKE) "LUAC_T=luac.exe" luac.exe
 
