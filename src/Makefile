@@ -6,13 +6,13 @@
 # Your platform. See PLATS for possible values.
 PLAT= none
 
-CC= gcc
+CC= zig cc
 CFLAGS= -O2 -Wall -DLUA_COMPAT_ALL $(SYSCFLAGS) $(MYCFLAGS)
 LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
 LIBS= -lm $(SYSLIBS) $(MYLIBS)
 
-AR= ar rcu
-RANLIB= ranlib
+AR= zig ar rcu
+RANLIB= zig ranlib
 RM= rm -f
 
 SYSCFLAGS=
