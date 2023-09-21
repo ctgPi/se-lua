@@ -4,6 +4,7 @@ const c = @cImport({
     @cInclude("sys/sysinfo.h");
     @cInclude("sys/types.h");
     @cInclude("sys/wait.h");
+    @cInclude("time.h");
     @cInclude("unistd.h");
 });
 
@@ -124,6 +125,22 @@ pub export fn env_wait_for_background_process(L: *LuaState) callconv(.C) c_int {
     return 2;
 }
 
+pub export fn env_monotonic_clock(L: *LuaState) callconv(.C) c_int {
+    var time: c.timespec = undefined;
+
+    const result = c.clock_gettime(c.CLOCK_MONOTONIC, &time);
+    if (result != 0) {
+        unreachable;  // TODO
+    }
+
+    const tick: f64 = @as(f64, @floatFromInt(time.tv_sec)) + 1.0E-9 * @as(f64, @floatFromInt(time.tv_nsec));
+
+    L.checkStack(1);
+    L.pushNumber(f64, tick);
+
+    return 1;
+}
+
 pub const env = [_:luaL_Reg.SENTINEL]luaL_Reg{
     luaL_Reg{
         .name = "operating_system",
@@ -152,6 +169,10 @@ pub const env = [_:luaL_Reg.SENTINEL]luaL_Reg{
     luaL_Reg{
         .name = "wait_for_background_process",
         .func = &env_wait_for_background_process,
+    },
+    luaL_Reg{
+        .name = "monotonic_clock",
+        .func = &env_monotonic_clock,
     },
 };
 
