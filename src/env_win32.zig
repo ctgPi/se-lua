@@ -67,8 +67,12 @@ pub export fn env_processor_count(L: *LuaState) callconv(.C) c_int {
 
 pub export fn env_spawn_background_process(L: *LuaState) callconv(.C) c_int {
     var command_line = L.getString(1);
+    if (command_line.len >= 4096) {
+        unreachable;  // TODO
+    }
     var buffer = [_]u8{0} ** 4096;
     @memcpy(buffer[0..command_line.len], command_line);
+
     var startupInfo = std.mem.zeroes(c.STARTUPINFOA);
     var processInformation: c.PROCESS_INFORMATION = undefined;
     {
@@ -90,7 +94,8 @@ pub export fn env_spawn_background_process(L: *LuaState) callconv(.C) c_int {
     return 1;
 }
 
-pub export fn env_wait_for_process(L: *LuaState) callconv(.C) c_int {
+pub export fn env_wait_for_background_process(L: *LuaState) callconv(.C) c_int {
+    // TODO: rerite to use CreateToolhelp32Snapshot, Process32Next to find children processes
     const WAIT_OBJECT_0 = 0;
     const MAXIMUM_WAIT_OBJECTS = 0x80;
     const WAIT_TIMEOUT = 0x102;
@@ -105,7 +110,7 @@ pub export fn env_wait_for_process(L: *LuaState) callconv(.C) c_int {
         @intCast(handles.len),
         handles.ptr,
         0,
-        10000,
+        c.INFINITE,
     );
     if (result == WAIT_TIMEOUT) {
         L.checkStack(1);
@@ -113,9 +118,30 @@ pub export fn env_wait_for_process(L: *LuaState) callconv(.C) c_int {
         return 1;
     } else if (WAIT_OBJECT_0 <= result and result < (WAIT_OBJECT_0 + handles.len)) {
         const i = result - WAIT_OBJECT_0;
-        L.checkStack(1);
-        L.pushLightUserData(handles[i].?);
-        return 1;
+        const handle = handles[i].?;
+
+        const exit_code: c.DWORD = blk: {
+            var exit_code: c.DWORD = undefined;
+            const result = c.GetExitCodeProcess(handle, &exit_code);
+            if (result == 0) {
+                unreachable; // TODO
+            }
+
+            break :blk exit_code;
+        }
+
+        {
+            const result = c.CloseHandle(handle);
+            if (result == 0) {
+                unreachable; // TODO
+            }
+        }
+
+        L.checkStack(2);
+        L.pushLightUserData(handle);
+        L.pushNumber(exit_code);
+
+        return 2;
     } else {
         unreachable; // TODO
     }
@@ -172,16 +198,8 @@ pub const env = [_:luaL_Reg.SENTINEL]luaL_Reg{
         .func = &env_spawn_background_process,
     },
     luaL_Reg{
-        .name = "wait_for_process",
-        .func = &env_wait_for_process,
-    },
-    luaL_Reg{
-        .name = "get_process_exit_code",
-        .func = &env_get_process_exit_code,
-    },
-    luaL_Reg{
-        .name = "close_process_handle",
-        .func = &env_close_process_handle,
+        .name = "wait_for_background_process",
+        .func = &env_wait_for_background_process,
     },
 };
 
