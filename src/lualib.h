@@ -50,6 +50,9 @@ LUAMOD_API int (luaopen_zip) (lua_State *L);
 #define LUA_ENVLIBNAME	"env"
 LUAMOD_API int (luaopen_env) (lua_State *L);
 
+#define LUA_CURLLIBNAME	"curl"
+LUAMOD_API int (luaopen_curl) (lua_State *L);
+
 /* open all previous libraries */
 LUALIB_API void (luaL_openlibs) (lua_State *L);
 

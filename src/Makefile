@@ -21,7 +21,7 @@ SYSLIBS=
 
 MYCFLAGS=
 MYLDFLAGS=
-MYLIBS=
+MYLIBS=-lcurl
 MYOBJS=
 
 # == END OF USER SETTINGS -- NO NEED TO CHANGE ANYTHING BELOW THIS LINE =======
@@ -34,7 +34,7 @@ CORE_O=	lapi.o lcode.o lctype.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o \
 	ltm.o lundump.o lvm.o lzio.o
 LIB_O=	lauxlib.o lbaselib.o lbitlib.o lcorolib.o ldblib.o liolib.o \
 	lmathlib.o loslib.o lstrlib.o ltablib.o loadlib.o linit.o \
-	zip.o rng.o miniz.o miniz_tdef.o miniz_tinfl.o miniz_zip.o env.o
+	zip.o rng.o miniz.o miniz_tdef.o miniz_tinfl.o miniz_zip.o env.o curl.o
 BASE_O= $(CORE_O) $(LIB_O) $(MYOBJS)
 
 LUA_T=	lua
@@ -197,3 +197,5 @@ miniz.o: miniz.c miniz.h
 miniz_tdef.o: miniz_tdef.c miniz.h
 miniz_tinfl.o: miniz_tinfl.c miniz.h
 miniz_zip.o: miniz_zip.c miniz.h
+curl.o: curl.zig lua.zig
+	$(CC) -I. -o $@ -c $<

@@ -8,6 +8,6 @@ further information about Lua, see doc/readme.html.
 
 ## Ubuntu
 
-    sudo apt install libreadline-dev
+    sudo apt install libreadline-dev libcurl4-openssl-dev
     sudo snap install zig --beta --classic  # 0.11.0+
     make linux
